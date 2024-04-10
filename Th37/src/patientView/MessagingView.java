@@ -98,7 +98,7 @@ public class MessagingView{
 		-Put row of buttons on bottom of layout
 		-Register event handlers for button clicks
 		***************************************************/
-		msgLayout = new BorderPane();
+		mainLayout = new BorderPane();
 		patientMsg = new VBox();
 		nurseMsg = new VBox();
 		doctorMsg = new VBox();
@@ -114,11 +114,11 @@ public class MessagingView{
 		buttonRow.getChildren().addAll(sendButton,saveButton,delButton,readButton);
 			
 		//Place boxes within each border section
-		msgLayout.setTop(title);
-		msgLayout.setLeft(patientMsg);
-		msgLayout.setCenter(nurseMsg);
-		msgLayout.setRight(doctorMsg);
-		msgLayout.setBottom(buttonRow);
+		mainLayout.setTop(title);
+		mainLayout.setLeft(patientMsg);
+		mainLayout.setCenter(nurseMsg);
+		mainLayout.setRight(doctorMsg);
+		mainLayout.setBottom(buttonRow);
 
 		//Define the main message scene
 		mainMsgScene = new Scene(mainLayout,800,500);
