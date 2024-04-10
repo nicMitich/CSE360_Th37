@@ -29,9 +29,18 @@ class Message{
 	private String content;
 	private boolean isRead;
 
+	//Constructor for Message Class
+	public Message(String str1, Date date, String str2) {
+		this.sender = str1;
+		this.timestamp = date;
+		this.content = str2;
+		this.isRead = false; //Default status of new message is not read
+	}
+
 	//Change isRead flag so that message will not show as a notification
 	public void markAsRead(){
 		//Set isRead to true
+		this.isRead = true;
 	}
 
 	public void save(){
