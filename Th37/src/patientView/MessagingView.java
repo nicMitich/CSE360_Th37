@@ -54,7 +54,16 @@ class Message{
 
 public class MessagingView{
 	//Create BorderPane object for Message Screen layout
-	private BorderPane msgLayout = new BorderPane();
+	private Scene mainMsgScene;
+	private Scene newMsgScene;
+	private Scene viewMsgScene;
+	private BorderPane mainLayout;
+	private BorderPane newLayout;
+	private BorderPane viewLayout;
+	private VBox patientMsg;
+	private VBox nurseMsg;
+	private VBox doctorMsg;
+	private HBox buttonRow;
 	
 	//Create ListView Objects to show a list of messages from Paitents, Doctors, and Nursed
 	private ListView<Message> patientList; 
@@ -70,11 +79,11 @@ public class MessagingView{
 	private Button delButton = new Button("Delete Message");
 	private Button readButton = new Button("Mark As Read");
 
-	//Create string
-	private static String title = "Messaging System";
-	private static String patientStr = "Patients";
-	private static String doctorStr = "Doctors";
-	private static String nurseStr = "Nurse";
+	//Create Labels
+	private static Label title = new Label("Messaging System");
+	private static Label patientLbl = new Label("Patients");
+	private static Label doctorLbl = new Label("Doctors");
+	private static Label nurseLbl = new Label("Nurse");
 
 	//Create Message object to reference the selected message from list
 	//private Message curMessage = /*currently selected message*/;
@@ -89,10 +98,31 @@ public class MessagingView{
 		-Put row of buttons on bottom of layout
 		-Register event handlers for button clicks
 		***************************************************/
-	}
+		msgLayout = new BorderPane();
+		patientMsg = new VBox();
+		nurseMsg = new VBox();
+		doctorMsg = new VBox();
+		buttonRow = new HBox();
+		patientList = new ListView();
+		nurseList = new ListView();
+		doctorList = new ListView();
+			
+		//Create V and H Boxes to organize on-screen elements
+		patientMsg.getChildren().addAll(patientLbl,patientList);
+		nurseMsg.getChildren().addAll(nurseLbl,nurseList);
+		doctorMsg.getChildren().addAll(doctorLbl,doctorList);
+		buttonRow.getChildren().addAll(sendButton,saveButton,delButton,readButton);
+			
+		//Place boxes within each border section
+		msgLayout.setTop(title);
+		msgLayout.setLeft(patientMsg);
+		msgLayout.setCenter(nurseMsg);
+		msgLayout.setRight(doctorMsg);
+		msgLayout.setBottom(buttonRow);
 
-	//Define the functions of each button
-	private void resgisterButtonHandlers(){
+		//Define the main message scene
+		mainMsgScene = new Scene(mainLayout,800,500);
+			
 		//Define method calls for each button click
 		sendButton.setOnAction((event)->{sendMessage();});
 		saveButton.setOnAction((event)->{saveMessage();});
