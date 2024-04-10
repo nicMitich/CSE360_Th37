@@ -54,6 +54,7 @@ class Message{
 
 public class MessagingView{
 	//Create BorderPane object for Message Screen layout
+	private Stage newMsgStage;
 	private Scene mainMsgScene;
 	private Scene newMsgScene;
 	private Scene viewMsgScene;
@@ -63,7 +64,9 @@ public class MessagingView{
 	private VBox patientMsg;
 	private VBox nurseMsg;
 	private VBox doctorMsg;
-	private HBox buttonRow;
+	private HBox mainBtnRow;
+	private VBox newMsgBox;
+	private HBox newBtnRow;
 	
 	//Create ListView Objects to show a list of messages from Paitents, Doctors, and Nursed
 	private ListView<Message> patientList; 
@@ -71,19 +74,26 @@ public class MessagingView{
 	private ListView<Message> nurseList;
 
 	//Create TextArea object to enable user text input
-	private TextArea messageEntry = new TextArea();
+	private TextArea messageEntry;
+	private TextField recipient;
 
 	//Create Buttons to perform required functions of sending, deleting, saving, and marking messages
-	private Button sendButton = new Button("Send Message");
-	private Button saveButton = new Button("Save Message");
-	private Button delButton = new Button("Delete Message");
-	private Button readButton = new Button("Mark As Read");
+	private Button newMsgBtn;
+	private Button saveBtn;
+	private Button delBtn;
+	private Button readBtn;
+	private Button backBtn;
+	private Button sendBtn;
+	private Button cancelBtn;
 
 	//Create Labels
-	private static Label title = new Label("Messaging System");
+	private static Label mainTitle = new Label("Messaging System");
 	private static Label patientLbl = new Label("Patients");
 	private static Label doctorLbl = new Label("Doctors");
 	private static Label nurseLbl = new Label("Nurse");
+	private static String newTitle = "New Message";
+	private static Label recipientLbl = new Label("Recipient:");
+	private static Label messageLbl = new Label("Message Body:");
 
 	//Create Message object to reference the selected message from list
 	//private Message curMessage = /*currently selected message*/;
@@ -102,37 +112,81 @@ public class MessagingView{
 		patientMsg = new VBox();
 		nurseMsg = new VBox();
 		doctorMsg = new VBox();
-		buttonRow = new HBox();
+		mainBtnRow = new HBox();
 		patientList = new ListView();
 		nurseList = new ListView();
 		doctorList = new ListView();
+		
+		newMsgBtn = new Button("Create New Message");
+		saveBtn = new Button("Save Message");
+		delBtn = new Button("Delete Message");
+		readBtn = new Button("Mark As Read");
+		backBtn = new Button("Back");
 			
+		//Define method calls for each button click
+		newMsgBtn.setOnAction((event)->{createMessage();});
+		saveBtn.setOnAction((event)->{saveMessage();});
+		delBtn.setOnAction((event)->{delMessage();});
+		readBtn.setOnAction((event)->{readMessage();});
+		backBtn.setOnAction((event)->{backToMain();});
+
 		//Create V and H Boxes to organize on-screen elements
 		patientMsg.getChildren().addAll(patientLbl,patientList);
 		nurseMsg.getChildren().addAll(nurseLbl,nurseList);
 		doctorMsg.getChildren().addAll(doctorLbl,doctorList);
-		buttonRow.getChildren().addAll(sendButton,saveButton,delButton,readButton);
+		mainBtnRow.getChildren().addAll(newMsgBtn,delBtn,readBtn,backBtn);
 			
 		//Place boxes within each border section
-		mainLayout.setTop(title);
+		mainLayout.setTop(mainTitle);
 		mainLayout.setLeft(patientMsg);
 		mainLayout.setCenter(nurseMsg);
 		mainLayout.setRight(doctorMsg);
-		mainLayout.setBottom(buttonRow);
+		mainLayout.setBottom(mainBtnRow);
 
 		//Define the main message scene
 		mainMsgScene = new Scene(mainLayout,800,500);
 			
-		//Define method calls for each button click
-		sendButton.setOnAction((event)->{sendMessage();});
-		saveButton.setOnAction((event)->{saveMessage();});
-		delButton.setOnAction((event)->{delMessage();});
-		readButton.setOnAction((event)->{readMessage();});
+		newLayout = new BorderPane();
+		newMsgBox = new VBox();
+		newBtnRow = new HBox();
+		recipient = new TextField();
+		messageEntry = new TextArea();
+		sendBtn = new Button("Send");
+		cancelBtn = new Button("Cancel");
+		
+		sendBtn.setOnAction((event)->{sendMessage();});
+		cancelBtn.setOnAction((event)->{cancel();});
+		
+		
+		newBtnRow.getChildren().addAll(sendBtn,cancelBtn);
+		newMsgBox.getChildren().addAll(recipientLbl,recipient,messageLbl,messageEntry,newBtnRow);
+		
+		newLayout.setCenter(newMsgBox);
+		newMsgScene = new Scene(newLayout,400,300);
+		
+		newMsgStage = new Stage();
+		newMsgStage.setTitle(newTitle);
+		newMsgStage.setScene(newMsgScene);
+	}
+	
+	private void backToMain() {
+		
+	}
+	
+	private void cancel() {
+		this.newMsgStage.hide();
+		this.recipient.clear();
+		this.messageEntry.clear();
+	}
+	
+	private void createMessage() {
+		newMsgStage.show();
 	}
 
 	private void sendMessage(){
 		//Create message object from selected recipients and input from text field
 		//Use 3rd Party API to send a secure, encrypted message over the internet
+		
 	}
 
 	private void saveMessage(){
