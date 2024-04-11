@@ -26,7 +26,7 @@ import java.util.Date;
 class Message{
 	private String sender;
 	private String recipient;
-	private Date timestamp;
+	//private Date timestamp;
 	private String content;
 	private boolean isRead;
 
@@ -121,6 +121,7 @@ public class MessagingView{
 		nurseList = new ListView();
 		doctorList = new ListView();
 		
+		//Create button objects for main view
 		newMsgBtn = new Button("Create New Message");
 		saveBtn = new Button("Save Message");
 		delBtn = new Button("Delete Message");
@@ -149,45 +150,53 @@ public class MessagingView{
 
 		//Define the main message scene
 		mainMsgScene = new Scene(mainLayout,800,500);
-			
+		
+		//Instantiate organizational objects for new message screen
 		newLayout = new BorderPane();
 		newMsgBox = new VBox();
 		newBtnRow = new HBox();
+		
+		//Create text fields and buttons
 		recipient = new TextField();
 		sender = new TextField();
 		messageEntry = new TextArea();
 		sendBtn = new Button("Send");
 		cancelBtn = new Button("Cancel");
 		
+		//Define button behavior
 		sendBtn.setOnAction((event)->{sendMessage();});
 		cancelBtn.setOnAction((event)->{cancel();});
 		
-		
+		//Define layout of new message screen
 		newBtnRow.getChildren().addAll(sendBtn,cancelBtn);
 		newMsgBox.getChildren().addAll(recipientLbl,recipient,senderLbl,sender,messageLbl,messageEntry,newBtnRow);
-		
 		newLayout.setCenter(newMsgBox);
-		newMsgScene = new Scene(newLayout,400,300);
 		
+		//Create and define Scene for new message window
+		newMsgScene = new Scene(newLayout,400,300);
 		newMsgStage = new Stage();
 		newMsgStage.setTitle(newTitle);
 		newMsgStage.setScene(newMsgScene);
 	}
 	
+	//Exit the message system and return to main screen
 	private void backToMain() {
 		
 	}
 	
+	//This button clears any text entered in the new message window and closes the window
 	private void cancel() {
 		this.newMsgStage.hide();
 		this.clear();
 	}
 	
+	//Clear values entered into text entry fields
 	private void clear() {
 		this.recipient.clear();
 		this.messageEntry.clear();	
 	}
 	
+	//Opens dialog box with text boxes to create a new message- with send and cancel buttons underneath
 	private void createMessage() {
 		newMsgStage.show();
 	}
