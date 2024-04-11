@@ -1,4 +1,3 @@
-package asuHelloWorldJavaFX;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -8,6 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -21,6 +21,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 
 public class TempeLoginApp extends Application {
 
@@ -30,6 +31,8 @@ public class TempeLoginApp extends Application {
     private GridPane signUpForm;
     private GridPane doctorForm;
     private GridPane nurseForm;
+    private GridPane messageForm;
+
 
     @Override
     public void start(Stage primaryStage) {
@@ -37,7 +40,7 @@ public class TempeLoginApp extends Application {
         createLoginForm();
     }
 
-    private void createLoginForm() {
+    public void createLoginForm() {
         loginForm = new GridPane();
         loginForm.setAlignment(Pos.CENTER);
         loginForm.setHgap(10);
@@ -124,14 +127,14 @@ public class TempeLoginApp extends Application {
             // Replace this with the actual navigation logic
             System.out.println("Login successful!");
             loggedInUsername = username;
-            createPatientHomepage();
+            createPatientHomepage(username);
         } else {
             // Display an error message
             Label errorLabel = new Label("UserID/ Password not found");
             patientForm.add(errorLabel, 0, 5, 2, 1);
         }
     }
-    private void createPatientHomepage() {
+    private void createPatientHomepage(String username) {
         GridPane patientHomepage = new GridPane();
         patientHomepage.setAlignment(Pos.CENTER);
         patientHomepage.setHgap(10);
@@ -142,10 +145,11 @@ public class TempeLoginApp extends Application {
         patientHomepage.add(titleLabel, 0, 0, 2, 1);
 
         Button previousVisitsButton = new Button("Previous Visits");
+        previousVisitsButton.setOnAction(e -> openMedicalHistory(username));
         patientHomepage.add(previousVisitsButton, 0, 3, 2, 1);
 
         Button settingsButton = new Button("Settings/Profile");
-        settingsButton.setOnAction(e -> openSettings());
+        settingsButton.setOnAction(e -> openSettings(username));
         patientHomepage.add(settingsButton, 0, 4, 2, 1);
         
         
@@ -162,7 +166,7 @@ public class TempeLoginApp extends Application {
         primaryStage.setScene(scene);
     }
 
-    private void openSettings() {
+    private void openSettings(String username) {
         GridPane settingsPage = new GridPane();
         settingsPage.setAlignment(Pos.CENTER);
         settingsPage.setHgap(10);
@@ -181,7 +185,7 @@ public class TempeLoginApp extends Application {
         settingsPage.add(logoutButton, 1, 1);
 
         Button backButton = new Button("Back to Homepage");
-        backButton.setOnAction(e -> returnToHomepage());
+        backButton.setOnAction(e -> returnToHomepage(username));
         settingsPage.add(backButton, 0, 2, 2, 1);
 
         Scene settingsScene = new Scene(settingsPage, 400, 400);
@@ -193,7 +197,7 @@ public class TempeLoginApp extends Application {
     private void editProfile(String username) {
         // Retrieve user's existing information
 
-    	try (BufferedReader reader = new BufferedReader(new FileReader("patient_data.txt"))) {
+    	try (BufferedReader reader = new BufferedReader(new FileReader(username + "patient_data.txt"))) {
             String line;
             String[] userInfo = null;
             while ((line = reader.readLine()) != null) {
@@ -254,7 +258,7 @@ public class TempeLoginApp extends Application {
                 editProfileForm.add(saveButton, 0, 6, 2, 1);
 
                 Button cancelButton = new Button("Cancel");
-                cancelButton.setOnAction(e -> returnToHomepage());
+                cancelButton.setOnAction(e -> returnToHomepage(username));
                 HBox buttonBox = new HBox(cancelButton);
                 buttonBox.setAlignment(Pos.CENTER);
                 buttonBox.setPadding(new Insets(10, 0, 0, 0));
@@ -275,7 +279,7 @@ public class TempeLoginApp extends Application {
   
 
     private void saveProfileChanges(String firstName, String lastName, LocalDate dob, String mobileNumber, String password, String username) {
-        try (BufferedReader reader = new BufferedReader(new FileReader("patient_data.txt"));
+        try (BufferedReader reader = new BufferedReader(new FileReader(username + "patient_data.txt"));
              BufferedWriter writer = new BufferedWriter(new FileWriter("temp_patient_data.txt"))) {
             String line;
             boolean found = false;
@@ -301,15 +305,15 @@ public class TempeLoginApp extends Application {
         }
 
         // Rename the temp file to replace the original file
-        File file = new File("patient_data.txt");
+        File file = new File(username + "patient_data.txt");
         File tempFile = new File("temp_patient_data.txt");
         tempFile.renameTo(file);
 
         // Navigate back to the patient homepage
-        createPatientHomepage();
+        createPatientHomepage(username);
     }
     private boolean isValidPatientCredentials(String username, String password) {
-        try (BufferedReader reader = new BufferedReader(new FileReader("patient_data.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(username + "patient_data.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
@@ -325,8 +329,8 @@ public class TempeLoginApp extends Application {
         return false;
     }
     
-    private void returnToHomepage() {
-        createPatientHomepage();
+    private void returnToHomepage(String username) {
+        createPatientHomepage(username);
     }
 
 
@@ -419,7 +423,7 @@ public class TempeLoginApp extends Application {
         }
 
         // Save the user's information to a text file
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("patient_data.txt", true))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(username + "patient_data.txt", true))) {
             writer.write(firstName + "," + lastName + "," + dob.toString() + "," + mobileNumber + "," + username + "," + password);
             writer.newLine();
         } catch (IOException e) {
@@ -436,7 +440,7 @@ public class TempeLoginApp extends Application {
     }
     
     private boolean isCredentialTaken(String username, String password) {
-        try (BufferedReader reader = new BufferedReader(new FileReader("patient_data.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(username + "patient_data.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
@@ -452,19 +456,69 @@ public class TempeLoginApp extends Application {
 
     
 
+    private void openMedicalHistory(String username) {
+    	String vitalsFilename = username + "Vitals.txt";
+        String questionnaireFilename = username + "Questionnaire.txt";
+        String testFilename = username + "MedicalRecord.txt";
+
+        StringBuilder medicalHistory = new StringBuilder();
+
+        // Read and append vitals information
+        medicalHistory.append("Vitals:\n");
+        try (BufferedReader reader = new BufferedReader(new FileReader(vitalsFilename))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                medicalHistory.append(line).append("\n");
+            }
+        } catch (IOException e) {
+            medicalHistory.append("Error reading vitals file.\n");
+        }
+
+        medicalHistory.append("\n"); // Add a blank line between sections
+
+        // Read and append questionnaire information
+        medicalHistory.append("Questionnaire:\n");
+        try (BufferedReader reader = new BufferedReader(new FileReader(questionnaireFilename))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                medicalHistory.append(line).append("\n");
+            }
+        } catch (IOException e) {
+            medicalHistory.append("Error reading questionnaire file.\n");
+        }
+        
+        medicalHistory.append("\n"); // Add a blank line between sections
+        
+        medicalHistory.append("Medical Record:\n");
+        try (BufferedReader reader = new BufferedReader(new FileReader(testFilename))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                medicalHistory.append(line).append("\n");
+            }
+        } catch (IOException e) {
+            medicalHistory.append("Error reading medical record file.\n");
+        }
+
+        medicalHistory.append("\n"); // Add a blank line between sections
+
+
+        // Display the medical history
+        // This can be done in a text area, a label, or any other suitable UI component
+        System.out.println(medicalHistory.toString());
+    }
     
-    
-    private void MessageView() {
-        // Implement opening the messaging interface here
+    void MessageView() {
+    	MessagingSystem messageForm = new MessagingSystem(this);
+        messageForm.show();
     }
 
     private void createDoctorForm() {
-        // Implement doctor form creation here
+    	DoctorView doctorForm = new DoctorView(this);
+        doctorForm.show();
     }
 
     private void createNurseForm() {
-        // Implement nurse form creation here
+    	NurseView nurseForm = new NurseView(this);
+        nurseForm.show();
     }
-
-    
 }
