@@ -1,6 +1,4 @@
 
-package nurseview;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -19,11 +17,23 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
-public class NurseView extends Application {
-	private Scene vitalScene;
+
+public class NurseView {
+	
+	private TempeLoginApp mainView;
+    private Stage stage;
+    private Scene vitalScene;
 	private Scene questionnaireScene;
-	public void start(Stage primaryStage) {
-		/*
+    
+    // Constructor to initialize PatientView with a reference to the main application
+    public NurseView(TempeLoginApp mainView) {
+        this.mainView = mainView;
+        this.stage = new Stage();
+        stage.setTitle("Nurse View");
+    }
+	
+    public void show() {
+    	/*
 		 * Nurse View Main Page
 		 */
 		//Top tabs
@@ -56,7 +66,7 @@ public class NurseView extends Application {
 		messageButton.setOnAction(event -> {
 			//If button is clicked go to message view
 			//Navigation logic goes here
-		
+			mainView.MessageView();
 		});
 		
 		HBox topBox = new HBox(10, homeLabel, messageButton);
@@ -78,7 +88,7 @@ public class NurseView extends Application {
 			}
 			else
 			{
-				primaryStage.setScene(vitalScene);
+				stage.setScene(vitalScene);
 			}
 		});
 		
@@ -96,7 +106,7 @@ public class NurseView extends Application {
 			}
 			else
 			{
-				primaryStage.setScene(questionnaireScene);
+				stage.setScene(questionnaireScene);
 			}
 		});
 		
@@ -119,9 +129,9 @@ public class NurseView extends Application {
 		//Set scene
 		BorderPane root = new BorderPane(tabPane);
 		Scene scene = new Scene(root, 400, 250);
-		primaryStage.setScene(scene);
-		primaryStage.setTitle("Nurse View");
-		primaryStage.show();
+		stage.setScene(scene);
+		stage.setTitle("Nurse View");
+		stage.show();
 		/*
 		 * Vitals Page
 		 */
@@ -188,7 +198,7 @@ public class NurseView extends Application {
 			bloodPressureField.clear();
 		});
 		Button backVitals = new Button("Back");
-		backVitals.setOnAction(e -> primaryStage.setScene(scene));
+		backVitals.setOnAction(e -> stage.setScene(scene));
 		
 		
 		//Add labels, text fields and buttons to vitals grid
@@ -267,7 +277,7 @@ public class NurseView extends Application {
 			otherField.clear();
 		});
 		Button backQuestionnaire = new Button("Back");
-		backQuestionnaire.setOnAction(e -> primaryStage.setScene(scene));
+		backQuestionnaire.setOnAction(e -> stage.setScene(scene));
 		
 		
 		//Add labels, text fields and buttons to questionnaire grid
@@ -370,10 +380,8 @@ public class NurseView extends Application {
 		patientInformationPane.setBottom(display);
 		//set patient info pane to patient info tab
 		patientInfoTab.setContent(patientInformationPane);
-	}
-	
-	
-	public static void main(String[] args) {
-		launch(args);
+		stage.setScene(scene);
+		stage.setTitle("Nurse View");
+		stage.show();
 	}
 }
