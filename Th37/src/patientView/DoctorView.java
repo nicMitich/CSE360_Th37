@@ -1,4 +1,9 @@
-package patientView;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -6,28 +11,41 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
  
     
 public class DoctorView {
 	
-	private Scene prescriptionScene;
-	public void start(Stage primaryStage) {
-		
-		
+	private TempeLoginApp mainView;
+    private Stage stage;
+    private Scene prescriptionScene;
+    
+    // Constructor to initialize PatientView with a reference to the main application
+    public DoctorView(TempeLoginApp mainView) {
+        this.mainView = mainView;
+        this.stage = new Stage();
+        stage.setTitle("Doctor View");
+    }
+    
+    public void show() {
 		//Top tabs
 		TabPane tabPane = new TabPane();
 		Tab homeTab = new Tab("Home");
@@ -66,7 +84,7 @@ public class DoctorView {
 			}
 			else
 			{
-				primaryStage.setScene(prescriptionScene);
+				stage.setScene(prescriptionScene);
 			}
 		});
 		
@@ -75,7 +93,7 @@ public class DoctorView {
 		messageButton.setOnAction(event -> {
 			//If button is clicked go to message view
 			//Navigation logic goes here
-		
+			mainView.MessageView();
 		});
 		
 		HBox topBox = new HBox(10, homeLabel, messageButton);
@@ -92,7 +110,7 @@ public class DoctorView {
 		logOutButton.setPrefSize(175,50);
 		
 		logOutButton.setOnAction(event -> {
-			//LOGS OUT OF ACCOUNT
+			mainView.createLoginForm();
 		});
 		HBox settingsBox = new HBox(logOutButton);
 		settingsBox.setPadding(new Insets(50,0,0,100));
@@ -118,9 +136,9 @@ public class DoctorView {
 		//Set scene
 		BorderPane root = new BorderPane(tabPane);
 		Scene scene = new Scene(root, 400, 250);
-		primaryStage.setScene(scene);
-		primaryStage.setTitle("Doctor View");
-		primaryStage.show();
+		stage.setScene(scene);
+		stage.setTitle("Doctor View");
+		stage.show();
 		
 		/*
 		 * Vitals Page
@@ -180,7 +198,7 @@ public class DoctorView {
 			prescriptionField.clear();
 		});
 		Button backVitals = new Button("Back");
-		backVitals.setOnAction(e -> primaryStage.setScene(scene));
+		backVitals.setOnAction(e -> stage.setScene(scene));
 		
 		
 		//Add labels, text fields and buttons to vitals grid
@@ -258,12 +276,5 @@ public class DoctorView {
 		//set patient info pane to patient info tab
 		patientInfoTab.setContent(patientInformationPane);
 	}
-	
-	
-	public static void main(String[] args) {
-		launch(args);
-	}
-
-	}
-
+}
 
