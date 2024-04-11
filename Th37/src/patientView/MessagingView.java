@@ -1,234 +1,93 @@
-package patientView;
+
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
+import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import java.lang.String;
-import java.util.Date;
 
-class Message{
-	private String sender;
-	private String recipient;
-	//private Date timestamp;
-	private String content;
-	private boolean isRead;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 
-	//Constructor for Message Class
-	public Message(String str1, String str2, String str3) {
-		this.sender = str1;
-		this.recipient = str2;
-		//this.timestamp = date;
-		this.content = str3;
-		this.isRead = false; //Default status of new message is not read
-	}
-
-	//Change isRead flag so that message will not show as a notification
-	public void markAsRead(){
-		//Set isRead to true
-		this.isRead = true;
-	}
-
-	public void save(){
-		//Database will store this message with the other saved messages of each user
-	}
-
-	public void delete(){
-		//The message object will be deleted from the database
-	}
-}
-
-public class MessagingView{
-	//Create BorderPane object for Message Screen layout
-	private Stage newMsgStage;
-	private Scene mainMsgScene;
-	private Scene newMsgScene;
-	private Scene viewMsgScene;
-	private BorderPane mainLayout;
-	private BorderPane newLayout;
-	private BorderPane viewLayout;
-	private VBox patientMsg;
-	private VBox nurseMsg;
-	private VBox doctorMsg;
-	private HBox mainBtnRow;
-	private VBox newMsgBox;
-	private HBox newBtnRow;
+public class MessagingSystem{
 	
-	//Create ListView Objects to show a list of messages from Paitents, Doctors, and Nursed
-	private ListView<Message> patientList; 
-	private ListView<Message> doctorList;
-	private ListView<Message> nurseList;
+	private TempeLoginApp mainView;
+    private Stage stage;
+    private ObservableList<String> messageList = FXCollections.observableArrayList();
+    
+    public MessagingSystem(TempeLoginApp mainView) {
+        this.mainView = mainView;
+        this.stage = new Stage();
+        stage.setTitle("Messaging View");
+    }
 
-	//Create TextArea object to enable user text input
-	private TextArea messageEntry;
-	private TextField recipient;
-	private TextField sender;
+    public void show() { {
+        stage.setTitle("Messaging System");
 
-	//Create Buttons to perform required functions of sending, deleting, saving, and marking messages
-	private Button newMsgBtn;
-	private Button saveBtn;
-	private Button delBtn;
-	private Button readBtn;
-	private Button backBtn;
-	private Button sendBtn;
-	private Button cancelBtn;
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.CENTER);
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(25, 25, 25, 25));
 
-	//Create Labels
-	private static Label mainTitle = new Label("Messaging System");
-	private static Label patientLbl = new Label("Patients");
-	private static Label doctorLbl = new Label("Doctors");
-	private static Label nurseLbl = new Label("Nurse");
-	private static String newTitle = "New Message";
-	private static Label senderLbl = new Label("Sender:");
-	private static Label recipientLbl = new Label("Recipient:");
-	private static Label messageLbl = new Label("Message Body:");
+        Label recipientLabel = new Label("Recipient:");
+        grid.add(recipientLabel, 0, 1);
 
-	//Create Message object to reference the selected message from list
-	//private Message curMessage = /*currently selected message*/;
+        ComboBox<String> recipientComboBox = new ComboBox<>();
+        recipientComboBox.getItems().addAll("Nurse", "Doctor", "Patient");
+        grid.add(recipientComboBox, 1, 1);
 
-	//Constructor to initialize MessagingView- arrange layout
-	public MessagingView(){
-		/**************************************************
-		-Set title in the top of the layout
-		-Set patientList in the left side of layout w/ title above
-		-Set nurseList in the center of layout w/ title above
-		-Set doctorList in the right side of layout w/ title above
-		-Put row of buttons on bottom of layout
-		-Register event handlers for button clicks
-		***************************************************/
-		mainLayout = new BorderPane();
-		patientMsg = new VBox();
-		nurseMsg = new VBox();
-		doctorMsg = new VBox();
-		mainBtnRow = new HBox();
-		patientList = new ListView();
-		nurseList = new ListView();
-		doctorList = new ListView();
-		
-		//Create button objects for main view
-		newMsgBtn = new Button("Create New Message");
-		saveBtn = new Button("Save Message");
-		delBtn = new Button("Delete Message");
-		readBtn = new Button("Mark As Read");
-		backBtn = new Button("Back");
-			
-		//Define method calls for each button click
-		newMsgBtn.setOnAction((event)->{createMessage();});
-		saveBtn.setOnAction((event)->{saveMessage();});
-		delBtn.setOnAction((event)->{delMessage();});
-		readBtn.setOnAction((event)->{readMessage();});
-		backBtn.setOnAction((event)->{backToMain();});
+        Label messageLabel = new Label("Message:");
+        grid.add(messageLabel, 0, 2);
 
-		//Create V and H Boxes to organize on-screen elements
-		patientMsg.getChildren().addAll(patientLbl,patientList);
-		nurseMsg.getChildren().addAll(nurseLbl,nurseList);
-		doctorMsg.getChildren().addAll(doctorLbl,doctorList);
-		mainBtnRow.getChildren().addAll(newMsgBtn,delBtn,readBtn,backBtn);
-			
-		//Place boxes within each border section
-		mainLayout.setTop(mainTitle);
-		mainLayout.setLeft(patientMsg);
-		mainLayout.setCenter(nurseMsg);
-		mainLayout.setRight(doctorMsg);
-		mainLayout.setBottom(mainBtnRow);
+        TextArea messageTextArea = new TextArea();
+        messageTextArea.setPrefHeight(100);
+        grid.add(messageTextArea, 1, 2);
 
-		//Define the main message scene
-		mainMsgScene = new Scene(mainLayout,800,500);
-		
-		//Instantiate organizational objects for new message screen
-		newLayout = new BorderPane();
-		newMsgBox = new VBox();
-		newBtnRow = new HBox();
-		
-		//Create text fields and buttons
-		recipient = new TextField();
-		sender = new TextField();
-		messageEntry = new TextArea();
-		sendBtn = new Button("Send");
-		cancelBtn = new Button("Cancel");
-		
-		//Define button behavior
-		sendBtn.setOnAction((event)->{sendMessage();});
-		cancelBtn.setOnAction((event)->{cancel();});
-		
-		//Define layout of new message screen
-		newBtnRow.getChildren().addAll(sendBtn,cancelBtn);
-		newMsgBox.getChildren().addAll(recipientLbl,recipient,senderLbl,sender,messageLbl,messageEntry,newBtnRow);
-		newLayout.setCenter(newMsgBox);
-		
-		//Create and define Scene for new message window
-		newMsgScene = new Scene(newLayout,400,300);
-		newMsgStage = new Stage();
-		newMsgStage.setTitle(newTitle);
-		newMsgStage.setScene(newMsgScene);
-	}
-	
-	//Exit the message system and return to main screen
-	private void backToMain() {
-		
-	}
-	
-	//This button clears any text entered in the new message window and closes the window
-	private void cancel() {
-		this.newMsgStage.hide();
-		this.clear();
-	}
-	
-	//Clear values entered into text entry fields
-	private void clear() {
-		this.recipient.clear();
-		this.messageEntry.clear();	
-	}
-	
-	//Opens dialog box with text boxes to create a new message- with send and cancel buttons underneath
-	private void createMessage() {
-		newMsgStage.show();
-	}
-	
-	private void delMessage(){
-		//Call delete method on curMessage
-	}
-	
-	private void readMessage(){
-		//Call markAsRead function on curMessage
-	}
+        Button sendButton = new Button("Send");
+        sendButton.setOnAction(e -> {
+            String recipient = recipientComboBox.getValue();
+            String message = messageTextArea.getText();
+            String fullMessage = "To " + recipient + ": " + message;
+            messageList.add(fullMessage);
+            saveMessage(fullMessage);
+            messageTextArea.clear();
+        });
+        grid.add(sendButton, 1, 3);
 
-	private void saveMessage(){
-		//Call save method on curMessage
+        ListView<String> messageListView = new ListView<>(messageList);
+        grid.add(messageListView, 1, 4);
 
-	}
-	
-	private void sendMessage(){
-		//Create message object from selected recipients and input from text field
-		//Use 3rd Party API to send a secure, encrypted message over the internet
-		Message msg = new Message(sender.getText(),recipient.getText(),messageEntry.getText());
-		
-		this.clear();
-		this.newMsgStage.hide();		
-	}
+        Scene scene = new Scene(grid, 400, 400);
+        stage.setScene(scene);
+        stage.show();
 
-	public void show(Stage stage){
-		/**************************************************
-		-Set the scene of the given stage to mainMsgScene
-		-Show the given Stage
-		**************************************************/
-		stage.setScene(mainMsgScene);
-		stage.show();
-	}
+        loadMessages();
+    }
+    }
+
+    private void saveMessage(String message) {
+        try (FileWriter fw = new FileWriter("messages.txt", true);
+             BufferedWriter bw = new BufferedWriter(fw);
+             PrintWriter out = new PrintWriter(bw)) {
+            out.println(message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadMessages() {
+        try {
+            List<String> lines = Files.readAllLines(Paths.get("messages.txt"));
+            messageList.addAll(lines);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
