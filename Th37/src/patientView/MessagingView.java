@@ -25,15 +25,17 @@ import java.util.Date;
 
 class Message{
 	private String sender;
+	private String recipient;
 	private Date timestamp;
 	private String content;
 	private boolean isRead;
 
 	//Constructor for Message Class
-	public Message(String str1, Date date, String str2) {
+	public Message(String str1, String str2, String str3) {
 		this.sender = str1;
-		this.timestamp = date;
-		this.content = str2;
+		this.recipient = str2;
+		//this.timestamp = date;
+		this.content = str3;
 		this.isRead = false; //Default status of new message is not read
 	}
 
@@ -76,6 +78,7 @@ public class MessagingView{
 	//Create TextArea object to enable user text input
 	private TextArea messageEntry;
 	private TextField recipient;
+	private TextField sender;
 
 	//Create Buttons to perform required functions of sending, deleting, saving, and marking messages
 	private Button newMsgBtn;
@@ -92,6 +95,7 @@ public class MessagingView{
 	private static Label doctorLbl = new Label("Doctors");
 	private static Label nurseLbl = new Label("Nurse");
 	private static String newTitle = "New Message";
+	private static Label senderLbl = new Label("Sender:");
 	private static Label recipientLbl = new Label("Recipient:");
 	private static Label messageLbl = new Label("Message Body:");
 
@@ -150,6 +154,7 @@ public class MessagingView{
 		newMsgBox = new VBox();
 		newBtnRow = new HBox();
 		recipient = new TextField();
+		sender = new TextField();
 		messageEntry = new TextArea();
 		sendBtn = new Button("Send");
 		cancelBtn = new Button("Cancel");
@@ -159,7 +164,7 @@ public class MessagingView{
 		
 		
 		newBtnRow.getChildren().addAll(sendBtn,cancelBtn);
-		newMsgBox.getChildren().addAll(recipientLbl,recipient,messageLbl,messageEntry,newBtnRow);
+		newMsgBox.getChildren().addAll(recipientLbl,recipient,senderLbl,sender,messageLbl,messageEntry,newBtnRow);
 		
 		newLayout.setCenter(newMsgBox);
 		newMsgScene = new Scene(newLayout,400,300);
@@ -175,37 +180,46 @@ public class MessagingView{
 	
 	private void cancel() {
 		this.newMsgStage.hide();
+		this.clear();
+	}
+	
+	private void clear() {
 		this.recipient.clear();
-		this.messageEntry.clear();
+		this.messageEntry.clear();	
 	}
 	
 	private void createMessage() {
 		newMsgStage.show();
 	}
-
-	private void sendMessage(){
-		//Create message object from selected recipients and input from text field
-		//Use 3rd Party API to send a secure, encrypted message over the internet
-		
-	}
-
-	private void saveMessage(){
-		//Call save method on curMessage
-	}
-
+	
 	private void delMessage(){
 		//Call delete method on curMessage
 	}
-
+	
 	private void readMessage(){
 		//Call markAsRead function on curMessage
 	}
 
-	public void show(){
+	private void saveMessage(){
+		//Call save method on curMessage
+
+	}
+	
+	private void sendMessage(){
+		//Create message object from selected recipients and input from text field
+		//Use 3rd Party API to send a secure, encrypted message over the internet
+		Message msg = new Message(sender.getText(),recipient.getText(),messageEntry.getText());
+		
+		this.clear();
+		this.newMsgStage.hide();		
+	}
+
+	public void show(Stage stage){
 		/**************************************************
-		-Create Scene with msgLayout as layout
-		-Create new Stage with above scene
-		-Show the above Stage
-		**************************************************/		
+		-Set the scene of the given stage to mainMsgScene
+		-Show the given Stage
+		**************************************************/
+		stage.setScene(mainMsgScene);
+		stage.show();
 	}
 }
